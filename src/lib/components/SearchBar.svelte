@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { debounce } from '$lib/utils/debounce';
+
 	interface Props {
 		value?: string;
 		loading?: boolean;
@@ -15,15 +17,10 @@
 		placeholder = 'Search by name or symbol…'
 	}: Props = $props();
 
-	let debounceTimer: ReturnType<typeof setTimeout>;
+	const debouncedSearch = debounce((q: string) => onSearch(q.trim()), debounceMs);
 
 	function handleInput(e: Event) {
-		const q = (e.target as HTMLInputElement).value;
-		value = q;
-		clearTimeout(debounceTimer);
-		debounceTimer = setTimeout(() => {
-			onSearch(q.trim());
-		}, debounceMs);
+		debouncedSearch((e.target as HTMLInputElement).value);
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
