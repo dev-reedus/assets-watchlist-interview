@@ -25,6 +25,8 @@
 <article
 	class="card relative overflow-hidden p-0"
 	class:in-watchlist={inWatchlist}
+	class:is-up={isPositive}
+	class:is-down={!isPositive}
 	aria-label="{asset.name} {asset.symbol}"
 >
 	<a
@@ -80,9 +82,17 @@
 </article>
 
 <style>
+	.is-up {
+		background: linear-gradient(160deg, var(--bg-card), var(--up-bg) 80%);
+	}
+
+	.is-down {
+		background: linear-gradient(160deg, var(--bg-card), var(--down-bg) 80%);
+	}
+
 	.in-watchlist {
 		border-color: rgba(251, 191, 36, 0.25);
-		background: linear-gradient(135deg, var(--bg-card), rgba(251, 191, 36, 0.04));
+		background: linear-gradient(135deg, var(--bg-card), rgba(251, 191, 36, 0.04) 70%);
 	}
 
 	article:hover {

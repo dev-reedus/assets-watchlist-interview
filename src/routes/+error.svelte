@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 </script>
 
 <svelte:head>
@@ -28,6 +29,6 @@
 		{page.error?.message ?? 'An unexpected error occurred.'}
 	</p>
 	<div class="mt-2">
-		<a href="/" class="btn btn-primary">← Back to Dashboard</a>
+		<a href={resolve('/')} class="btn btn-primary">← Back to Dashboard</a>
 	</div>
 </div>
