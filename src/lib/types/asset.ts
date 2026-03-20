@@ -1,4 +1,4 @@
-export type AssetCategory = 'stock' | 'etf' | 'crypto' | 'commodity' | 'empty' | 'error';
+export type AssetCategory = 'stock' | 'etf' | 'crypto' | 'commodity' | 'forex' | 'error';
 
 export interface Asset {
 	id: string;

@@ -27,10 +27,10 @@ export const CATEGORIES: Category[] = [
 		count: ASSETS.filter((a) => a.category === 'commodity').length
 	},
 	{
-		id: 'empty',
-		label: 'Empty',
-		icon: '◫',
-		count: ASSETS.filter((a) => a.category === 'empty').length
+		id: 'forex',
+		label: 'Forex',
+		icon: '€',
+		count: ASSETS.filter((a) => a.category === 'forex').length
 	},
 	{
 		id: 'error',
