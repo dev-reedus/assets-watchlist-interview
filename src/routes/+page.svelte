@@ -12,52 +12,38 @@
 	import CategoryFilter from '$lib/components/CategoryFilter.svelte';
 	import EmptyState from '$lib/components/EmptyState.svelte';
 	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
-	import { SvelteURLSearchParams } from 'svelte/reactivity';
+	import { invalidateAll } from '$app/navigation';
 
 	let { data }: { data: PageData } = $props();
 
 	let searchQuery = $derived(data.query ?? '');
 	let activeCategory = $derived(data.activeCategory ?? 'all');
-	let isSearching = $state(false);
-	let searchError = $state<string | null>(null);
-
-	let clientAssets = $state<{ assets: AssetSummary[]; total: number } | null>(null);
-
 	let showWatchlist = $derived(page.url.searchParams.has('watchlist'));
 
-	let abortController: AbortController | null = null;
+	// Track the streamed promise state explicitly so isLoading covers both
+	// the promise-pending phase and the navigation gap (isNavigatingHere)
+	let resolved = $state<{ assets: AssetSummary[]; total: number } | null>(null);
+	let loadError = $state<unknown>(null);
+	let isLoading = $state(true);
+	let loadErrorMessage = $derived(
+		loadError
+			? ((loadError as { body: { message: string } }).body?.message ?? 'Something went wrong.')
+			: ''
+	);
 
-	async function doSearch() {
-		// Cancel previous request
-		if (abortController) {
-			abortController.abort();
-		}
-		abortController = new AbortController();
-		const signal = abortController.signal;
-
-		isSearching = true;
-		searchError = null;
-		clientAssets = null;
-
-		try {
-			const params = new SvelteURLSearchParams();
-
-			if (searchQuery !== '') params.set('q', searchQuery);
-			if (activeCategory !== 'all') params.set('category', activeCategory);
-
-			const res = await fetch(`/api/asset?${params}`, { signal });
-
-			if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-			const payload = await res.json();
-			clientAssets = { assets: payload.data, total: payload.total };
-		} catch (e: unknown) {
-			if ((e as Error).name === 'AbortError') return; // Cancelled — ignore
-			searchError = 'Search failed. Please try again.';
-		} finally {
-			isSearching = false;
-		}
-	}
+	$effect(() => {
+		isLoading = true;
+		loadError = null;
+		data.streamed.assets
+			.then((result) => {
+				resolved = result;
+				isLoading = false;
+			})
+			.catch((err: unknown) => {
+				loadError = err;
+				isLoading = false;
+			});
+	});
 
 	function handleSearch(q: string) {
 		setQuery(q.trim());
@@ -68,8 +54,7 @@
 	}
 
 	function retrySearch() {
-		searchError = null;
-		doSearch();
+		invalidateAll();
 	}
 
 	let pageTitle = $derived(
@@ -107,17 +92,18 @@
 			<p class="pl-0.5 font-mono text-xs tracking-[0.05em] text-(--text-muted)">
 				{#if showWatchlist}
 					{watchlist.count} asset{watchlist.count !== 1 ? 's' : ''} tracked
-				{:else}
-					{#await data.streamed.assets then resolved}
-						{clientAssets?.total ?? resolved.total}
-						asset{(clientAssets?.total ?? resolved.total) !== 1 ? 's' : ''} available
-					{/await}
+				{:else if resolved}
+					{#if isLoading}
+						Loading...
+					{:else}
+						{resolved.total} asset{resolved.total !== 1 ? 's' : ''} available
+					{/if}
 				{/if}
 			</p>
 		</div>
 
 		{#if !showWatchlist}
-			<SearchBar bind:value={searchQuery} loading={isSearching} onSearch={handleSearch} />
+			<SearchBar bind:value={searchQuery} loading={isLoading} onSearch={handleSearch} />
 		{/if}
 	</div>
 
@@ -129,7 +115,7 @@
 				active={activeCategory}
 				onSelect={handleCategory}
 			/>
-			{#if isSearching}
+			{#if isLoading}
 				<span
 					class="flex items-center gap-2 font-mono text-[13px] text-(--text-muted)"
 					role="status"
@@ -145,13 +131,10 @@
 		</div>
 	{/if}
 
-	<!-- Error -->
-	{#if searchError}
-		<ErrorBanner message={searchError} onRetry={retrySearch} />
-	{/if}
-
 	<!-- Asset Grid -->
-	{#await data.streamed.assets}
+	{#if loadError}
+		<ErrorBanner message={loadErrorMessage} onRetry={retrySearch} />
+	{:else if isLoading}
 		<section aria-label="Loading assets" aria-busy="true">
 			<div class="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4 max-sm:grid-cols-1">
 				{#each { length: 12 } as _i, index (index)}
@@ -159,11 +142,10 @@
 				{/each}
 			</div>
 		</section>
-	{:then resolved}
-		{@const displayedAssets = (() => {
-			const base = clientAssets?.assets ?? resolved.assets;
-			return showWatchlist ? base.filter((a) => watchlist.has(a.id)) : base;
-		})()}
+	{:else if resolved}
+		{@const displayedAssets = showWatchlist
+			? resolved.assets.filter((a) => watchlist.has(a.id))
+			: resolved.assets}
 		{#if displayedAssets.length === 0}
 			<EmptyState
 				title={searchQuery ? `No results for "${searchQuery}"` : 'No assets found'}
@@ -183,7 +165,5 @@
 				</div>
 			</section>
 		{/if}
-	{:catch error}
-		<ErrorBanner message={error.body.message} onRetry={retrySearch} />
-	{/await}
+	{/if}
 </div>

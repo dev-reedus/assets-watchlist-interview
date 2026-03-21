@@ -11,7 +11,7 @@
 
 	let { open, onClose }: Props = $props();
 
-	let searchQuery = $state('');
+	let searchQuery = $derived(page.url.searchParams.get('q') ?? '');
 
 	let isDashboardActive = $derived(
 		page.url.pathname === '/' && !page.url.searchParams.has('watchlist')
