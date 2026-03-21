@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ fetch, params }) => {
 	]);
 
 	if (assetRes.status === 404) {
-		error(404, { message: `ASSET_NOT_FOUND: Asset "${params.id}" not found.` });
+		error(404, { message: `Asset "${params.id}" not found.` });
 	}
 
 	if (!assetRes.ok) {

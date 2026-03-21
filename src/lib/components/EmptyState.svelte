@@ -33,39 +33,3 @@
 		{/if}
 	{/if}
 </div>
-
-<style>
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-		padding: 10px 20px;
-		border-radius: var(--radius);
-		font-family: var(--font-display), sans-serif;
-		font-size: 13px;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		border: 1px solid transparent;
-		transition: all var(--transition);
-		cursor: pointer;
-	}
-
-	.btn:focus-visible {
-		outline: 2px solid var(--accent);
-		outline-offset: 2px;
-	}
-
-	.btn-ghost {
-		background: transparent;
-		color: var(--text-dim);
-		border-color: var(--border);
-	}
-
-	.btn-ghost:hover {
-		border-color: var(--accent);
-		color: var(--accent);
-		background: var(--accent-glow);
-	}
-</style>

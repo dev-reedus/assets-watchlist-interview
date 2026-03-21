@@ -15,15 +15,7 @@
 		{page.status}
 	</div>
 	<h1 class="font-display -mt-4 text-[clamp(22px,4vw,32px)] font-extrabold text-(--text)">
-		{#if page.status === 404}
-			{#if page.error?.message?.startsWith('ASSET_NOT_FOUND')}
-				Asset Not Found
-			{:else}
-				Page Not Found
-			{/if}
-		{:else}
-			Something Went Wrong
-		{/if}
+		{page.status === 404 ? 'Page Not Found' : 'Something Went Wrong'}
 	</h1>
 	<p class="max-w-100 text-[15px] leading-relaxed text-(--text-dim)">
 		{page.error?.message ?? 'An unexpected error occurred.'}
