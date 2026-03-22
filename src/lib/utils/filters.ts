@@ -1,23 +1,12 @@
-import { goto } from '$app/navigation';
-import { resolve } from '$app/paths';
+import { updateSearchParams } from '$lib/utils/url';
 
 export function setCategory(cat: string) {
 	const params = new URLSearchParams(window.location.search);
 	const urlCat = params.get('category');
-	if (urlCat === cat || cat === 'all') {
-		params.delete('category');
-	} else {
-		params.set('category', cat);
-	}
-	goto(resolve(`/?${params}`), { replaceState: true, keepFocus: true, noScroll: true });
+	const next = urlCat === cat || cat === 'all' ? null : cat;
+	updateSearchParams(new URL(window.location.href), { category: next });
 }
 
 export function setQuery(q: string) {
-	const params = new URLSearchParams(window.location.search);
-	if (q) {
-		params.set('q', q);
-	} else {
-		params.delete('q');
-	}
-	goto(resolve(`/?${params}`), { replaceState: true, keepFocus: true, noScroll: true });
+	updateSearchParams(new URL(window.location.href), { q: q || null });
 }
