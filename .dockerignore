@@ -1,0 +1,9 @@
+node_modules
+build
+.svelte-kit
+.storybook
+storybook-static
+coverage
+.env*
+*.test.ts
+*.stories.svelte
