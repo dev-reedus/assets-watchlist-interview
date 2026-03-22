@@ -164,6 +164,45 @@
     }
 }
 
+/* Navigation backdrop */
+.nav-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(8, 11, 18, 0.5);
+    backdrop-filter: blur(1px);
+    animation: fadeIn 150ms ease forwards;
+}
+
+/* Navigation progress bar */
+.nav-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    z-index: 200;
+    background: var(--accent-dark);
+    overflow: hidden;
+}
+
+.nav-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 180px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: nav-sweep 1s ease-in-out infinite;
+}
+
+@keyframes nav-sweep {
+    from { transform: translateX(-180px); }
+    to   { transform: translateX(100vw); }
+}
+
 /* ─── Shared Component Styles ───────────────────────────────── */
 
 /* Skip link */

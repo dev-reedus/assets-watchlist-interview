@@ -5,6 +5,7 @@
 	import logo from '$lib/assets/logo.svg';
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { resolve } from '$app/paths';
+	import { navigating } from '$app/state';
 
 	let { children } = $props();
 
@@ -15,6 +16,10 @@
 	);
 
 	let isWatchlistActive = $derived(page.url.searchParams.has('watchlist'));
+
+	let isPageChanging = $derived(
+		navigating.to !== null && navigating.from?.url.pathname !== navigating.to?.url.pathname
+	);
 
 	// Close sidebar on route change
 	$effect(() => {
@@ -86,6 +91,21 @@
 
 	<!-- Sidebar -->
 	<Sidebar open={sidebarOpen} onClose={() => (sidebarOpen = false)} />
+
+	<!-- Navigation progress bar -->
+	{#if navigating.to}
+		<div
+			class="nav-progress"
+			role="progressbar"
+			aria-label="Page loading"
+			aria-valuemin={0}
+			aria-valuemax={100}
+		></div>
+	{/if}
+
+	{#if isPageChanging}
+		<div class="nav-backdrop" aria-hidden="true"></div>
+	{/if}
 
 	<!-- Main content -->
 	<main class="flex flex-1 justify-center focus:outline-none" id="main-content" tabindex="-1">

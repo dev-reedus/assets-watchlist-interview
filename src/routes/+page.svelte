@@ -125,7 +125,7 @@
 						class="inline-block h-3 w-3 animate-[spin_500ms_linear_infinite] rounded-full border-2 border-(--border) border-t-(--accent)"
 						aria-hidden="true"
 					></span>
-					Searching…
+					Loading…
 				</span>
 			{/if}
 		</div>
