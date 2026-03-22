@@ -45,6 +45,8 @@
 	async function loadChart() {
 		const { createChart, CandlestickSeries } = await import('lightweight-charts');
 
+		if (!container) return;
+
 		chart = createChart(container, {
 			width: container.clientWidth,
 			height: 320,
@@ -133,6 +135,7 @@
 	onMount(async () => {
 		await loadChart();
 		mounted = true;
+		if (!container) return;
 		resizeObserver = new ResizeObserver(() => {
 			chart?.applyOptions({ width: container.clientWidth });
 		});
@@ -155,7 +158,7 @@
 		</h2>
 
 		<div class="flex gap-1" role="group" aria-label="Chart interval">
-			{#each INTERVALS as { label, value }}
+			{#each INTERVALS as { label, value } (value)}
 				<button
 					class="rounded-md px-3 py-1.5 font-mono text-[11px] font-semibold tracking-[0.04em] transition-all duration-150 {activeInterval ===
 					value
@@ -187,7 +190,7 @@
 		{/if}
 
 		{#if error}
-			<div class="flex h-[320px] items-center justify-center">
+			<div class="flex h-80 items-center justify-center">
 				<p class="font-mono text-[13px] text-(--down)">{error}</p>
 			</div>
 		{:else}
