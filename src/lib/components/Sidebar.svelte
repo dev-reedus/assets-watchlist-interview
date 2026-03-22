@@ -4,6 +4,7 @@
 	import { setQuery } from '$lib/utils/filters';
 	import { resolve } from '$app/paths';
 	import CurrencySelector from '$lib/components/CurrencySelector.svelte';
+	import SearchBar from '$lib/components/SearchBar.svelte';
 
 	interface Props {
 		open: boolean;
@@ -19,11 +20,9 @@
 	);
 	let isWatchlistActive = $derived(page.url.searchParams.has('watchlist'));
 
-	function handleSearch(e: KeyboardEvent) {
-		if (e.key === 'Enter' && searchQuery.trim()) {
-			setQuery(searchQuery.trim());
-			onClose();
-		}
+	function handleSearch(q: string) {
+		setQuery(q);
+		onClose();
 	}
 </script>
 
@@ -93,14 +92,11 @@
 
 		<div>
 			<label for="sidebar-search-input" class="sr-only">Search assets</label>
-			<input
-				id="sidebar-search-input"
-				type="search"
-				placeholder="Search assets…"
-				class="w-full rounded-(--radius) border border-(--border) bg-(--bg-input) px-3 py-2.5 text-[13px] text-(--text) transition-colors placeholder:text-(--text-muted) focus:border-(--border-focus) focus:outline-none"
-				bind:value={searchQuery}
-				onkeydown={handleSearch}
-				autocomplete="off"
+			<SearchBar
+				value={searchQuery}
+				onSearch={handleSearch}
+				enterOnly
+				placeholder="Search assets..."
 			/>
 		</div>
 	</div>

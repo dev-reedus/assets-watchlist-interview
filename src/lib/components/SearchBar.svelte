@@ -5,6 +5,7 @@
 		value?: string;
 		loading?: boolean;
 		onSearch: (query: string) => void;
+		enterOnly?: boolean;
 		debounceMs?: number;
 		placeholder?: string;
 	}
@@ -13,6 +14,7 @@
 		value = $bindable(''),
 		loading = false,
 		onSearch,
+		enterOnly = false,
 		debounceMs = 350,
 		placeholder = 'Search by name or symbol…'
 	}: Props = $props();
@@ -20,13 +22,17 @@
 	const debouncedSearch = debounce((q: string) => onSearch(q.trim()), debounceMs);
 
 	function handleInput(e: Event) {
-		debouncedSearch((e.target as HTMLInputElement).value);
+		if (!enterOnly) {
+			debouncedSearch((e.target as HTMLInputElement).value);
+		}
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
 			value = '';
 			onSearch('');
+		} else if (e.key === 'Enter' && enterOnly) {
+			onSearch(value.trim());
 		}
 	}
 </script>
