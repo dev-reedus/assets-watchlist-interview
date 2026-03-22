@@ -1,10 +1,12 @@
 import { error } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import type { PageLoad } from './$types';
 import type { Asset, Category } from '$lib/types/asset';
 
-export const load: PageServerLoad = async ({ fetch, params }) => {
+export const load: PageLoad = async ({ fetch, params, url }) => {
+	const targetCurrency = url.searchParams.get('currency') ?? 'USD';
+
 	const [assetRes, categoriesRes] = await Promise.all([
-		fetch(`/api/asset/${params.id}`),
+		fetch(`/api/asset/${params.id}?currency=${targetCurrency}`),
 		fetch(`/api/category`)
 	]);
 

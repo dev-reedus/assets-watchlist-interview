@@ -4,6 +4,7 @@
 	import { watchlist } from '$lib/stores/watchlist.svelte';
 	import logo from '$lib/assets/logo.svg';
 	import Sidebar from '$lib/components/Sidebar.svelte';
+	import CurrencySelector from '$lib/components/CurrencySelector.svelte';
 	import { resolve } from '$app/paths';
 	import { navigating } from '$app/state';
 
@@ -85,6 +86,8 @@
 						>
 					{/if}
 				</a>
+				<span class="mx-1 h-4 w-px bg-(--border)" aria-hidden="true"></span>
+				<CurrencySelector />
 			</nav>
 		</div>
 	</header>

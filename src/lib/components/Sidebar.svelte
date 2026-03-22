@@ -3,6 +3,7 @@
 	import { watchlist } from '$lib/stores/watchlist.svelte';
 	import { setQuery } from '$lib/utils/filters';
 	import { resolve } from '$app/paths';
+	import CurrencySelector from '$lib/components/CurrencySelector.svelte';
 
 	interface Props {
 		open: boolean;
@@ -55,6 +56,14 @@
 				onclick={onClose}
 				>✕
 			</button>
+		</div>
+
+		<div class="flex flex-col gap-2">
+			<span
+				class="font-display text-[11px] font-bold tracking-[0.15em] text-(--text-muted) uppercase"
+				>Currency</span
+			>
+			<CurrencySelector />
 		</div>
 
 		<nav aria-label="Sidebar navigation">

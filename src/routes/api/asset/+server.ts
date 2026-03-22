@@ -2,12 +2,14 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ASSETS } from '$lib/data/assets';
 import type { AssetSummary } from '$lib/types/asset';
+import { convertAssetSummary } from '$lib/utils/currencyConvert';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const GET: RequestHandler = async ({ url }) => {
 	const q = url.searchParams.get('q')?.trim().toLowerCase() ?? '';
 	const category = url.searchParams.get('category')?.toLowerCase() ?? '';
+	const targetCurrency = url.searchParams.get('currency') ?? 'USD';
 
 	await sleep(2500);
 
@@ -27,17 +29,8 @@ export const GET: RequestHandler = async ({ url }) => {
 		throw new Error('Error on purpose');
 	}
 
-	const summaries: AssetSummary[] = results.map(
-		({ id, symbol, name, price, change, changePercent, category, currency }) => ({
-			id,
-			symbol,
-			name,
-			price,
-			change,
-			changePercent,
-			category,
-			currency
-		})
+	const summaries: AssetSummary[] = results.map(({ id, symbol, name, price, change, changePercent, category, currency }) =>
+		convertAssetSummary({ id, symbol, name, price, change, changePercent, category, currency }, targetCurrency)
 	);
 
 	return json({

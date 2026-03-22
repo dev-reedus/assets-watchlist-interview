@@ -1,6 +1,7 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { ASSETS } from '$lib/data/assets';
+import { EXCHANGE_RATES } from '$lib/data/exchangeRates';
 
 export interface CandleData {
 	time: number;
@@ -30,9 +31,12 @@ function generateCandles(
 	assetId: string,
 	currentPrice: number,
 	interval: string,
-	count: number
+	count: number,
+	targetCurrency: string
 ): CandleData[] {
 	const rand = seededRandom(strToSeed(assetId + interval));
+
+	const exchangeRate = EXCHANGE_RATES[targetCurrency] ?? 1;
 
 	// Volatility by interval
 	const volatilityMap: Record<string, number> = {
@@ -52,7 +56,7 @@ function generateCandles(
 
 	// Simulate price going backwards from current one
 	const closes: number[] = new Array(count);
-	closes[count - 1] = currentPrice;
+	closes[count - 1] = currentPrice * exchangeRate;
 	for (let i = count - 2; i >= 0; i--) {
 		const change = (rand() - 0.49) * volatility;
 		closes[i] = closes[i + 1] / (1 + change);
@@ -95,10 +99,12 @@ export const GET: RequestHandler = ({ params, url }) => {
 		error(400, { message: `Invalid interval. Use one of: ${allowedIntervals.join(', ')}` });
 	}
 
+	const targetCurrency = url.searchParams.get('currency') ?? 'USD';
+
 	const countMap: Record<string, number> = { '1D': 90, '1W': 52, '1M': 24 };
 	const count = countMap[interval];
 
-	const candles = generateCandles(asset.id, asset.price, interval, count);
+	const candles = generateCandles(asset.id, asset.price, interval, count, targetCurrency);
 
 	return json({ data: candles, interval, asset_id: asset.id });
 };

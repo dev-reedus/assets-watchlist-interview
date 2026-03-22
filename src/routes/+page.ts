@@ -9,10 +9,12 @@ let controller: AbortController | null = null;
 export const load: PageLoad = async ({ fetch, url }) => {
 	const q = url.searchParams.get('q') ?? '';
 	const category = url.searchParams.get('category') ?? 'all';
+	const selectedCurrency = url.searchParams.get('currency') ?? 'USD';
 
 	const params = new URLSearchParams();
 	if (q !== '') params.set('q', q);
 	if (category !== 'all') params.set('category', category);
+	params.set('currency', selectedCurrency);
 
 	// Cancel previous in-flight assets stream on rapid navigation
 	let signal: AbortSignal | undefined;

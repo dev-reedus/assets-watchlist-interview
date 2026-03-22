@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
+	import { page } from '$app/state';
 
 	interface CandleData {
 		time: number;
@@ -20,6 +21,8 @@
 	let activeInterval = $state<Interval>('1D');
 	let loading = $state(true);
 	let error = $state<string | null>(null);
+
+	let currency = $derived(page.url.searchParams.get('currency') ?? 'USD');
 
 	const INTERVALS: { label: string; value: Interval }[] = [
 		{ label: '90D', value: '1D' },
@@ -89,7 +92,9 @@
 		loading = true;
 		error = null;
 		try {
-			const res = await fetch(`/api/asset/${assetId}/price-history?interval=${interval}`);
+			const res = await fetch(
+				`/api/asset/${assetId}/price-history?interval=${interval}&currency=${currency}`
+			);
 			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			const { data }: { data: CandleData[] } = await res.json();
 			candleSeries?.setData(
@@ -114,11 +119,20 @@
 		await fetchAndUpdate(interval);
 	}
 
+	// Re-fetch when currency changes (after initial mount)
+	let mounted = false;
+
+	$effect(() => {
+		void currency; // track currency reactively
+		if (mounted) untrack(() => fetchAndUpdate(activeInterval));
+	});
+
 	// Resize observer
 	let resizeObserver: ResizeObserver | null = null;
 
 	onMount(async () => {
 		await loadChart();
+		mounted = true;
 		resizeObserver = new ResizeObserver(() => {
 			chart?.applyOptions({ width: container.clientWidth });
 		});
