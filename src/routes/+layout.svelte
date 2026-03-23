@@ -127,6 +127,6 @@
 			</span>
 			Stonks-o-meter · Assets Watchlist · Demo Application
 		</div>
-		<p class="opacity-50">All prices are simulated and for demonstration purposes only.</p>
+		<p class="opacity-50">All data is simulated and for demonstration purposes only.</p>
 	</footer>
 </div>

@@ -20,8 +20,7 @@
 	let activeCategory = $derived(data.activeCategory ?? 'all');
 	let showWatchlist = $derived(page.url.searchParams.has('watchlist'));
 
-	// Track the streamed promise state explicitly so isLoading covers both
-	// the promise-pending phase and the navigation gap (isNavigatingHere)
+	// Track the streamed promise state explicitly
 	let resolved = $state<{ assets: AssetSummary[]; total: number } | null>(null);
 	let loadError = $state<unknown>(null);
 	let isLoading = $state(true);
