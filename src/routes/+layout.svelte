@@ -19,7 +19,9 @@
 	let isWatchlistActive = $derived(page.url.searchParams.has('watchlist'));
 
 	let isPageChanging = $derived(
-		navigating.to !== null && navigating.from?.url.pathname !== navigating.to?.url.pathname
+		navigating.to !== null &&
+			(navigating.from?.route.id !== navigating.to?.route.id ||
+				navigating.from?.route.id !== '/')
 	);
 
 	// Close sidebar on route change
