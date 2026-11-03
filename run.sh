@@ -11,7 +11,7 @@ echo "* Building container image *"
 echo "*****************************"
 echo ""
 
-docker build -t "$IMAGE" .
+docker build --pull -t "$IMAGE" .
 
 
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER}$"; then
